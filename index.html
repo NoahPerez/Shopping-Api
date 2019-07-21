@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <title>Shopping</title>
+</head>
+
+<style>
+    .box {
+        border: 1px solid black;
+
+    }
+
+    body {
+        background-color: rgb(21, 48, 139);
+        color: white;
+    }
+
+    .card .card-body p {
+        color: black;
+        overflow:hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical; 
+    }
+
+    #products .row .col-sm-4 {
+        padding-bottom: 0.5rem;
+    }
+
+
+
+
+
+   
+</style>
+
+<body>
+
+
+    <div class="container">
+        <h1>Products</h1>
+        
+        <div id="products" class="row">
+            <div class="col-sm-12">
+                <div id="cards-container" class="row">
+                    
+                </div>
+            </div>
+            <div class="col-sm-12">
+                    <label for="exampleFormControlSelect1">Search:</label>
+                    <input type="text" id="query" onkeyup="filterPostList()">
+            </div>
+        </div>
+    </div>
+
+    <hr WIDTH="100%" color="blue" SIZE="4">
+
+    <ul class="list-unstyled" id="box">
+        <h1>Your shopping Cart</h1>
+
+    </ul>
+    <script>
+        //* Get all the products from the API using a fetch
+        var posts = [];
+
+        window.onload = () => {
+            fetch("https://api.myjson.com/bins/18fh4d")
+                .then((resp) => resp.json())
+                .then((json) => {
+                    posts = json;
+                    console.log(posts)
+                    createPosts(posts);
+                });
+        }
+        //Display the list of items available on the page using template literals `` and .forEach
+        createPosts = (listOfPosts) => {
+            //document.querySelector("#products").innerHTML = '';//because i'm calling the function in my next function to recreate everything using the parameter in that function, so i'm clearing the already created list.
+            listOfPosts.forEach((post) => {
+                var row = document.querySelector("#cards-container");
+                var div = document.createElement("div");
+                div.classList.add("col-sm-4");
+                div.innerHTML += `
+                   
+                    
+
+                <div class="card">
+                   <img src="${post.img}"  class="card-img-top img-fluid" alt="product">
+                   <div class="card-body">
+                    <h5>Price: ${post.price}</h5>
+                    <p>Details: ${post.title}</p>
+                    <button type="button" class="btn btn-sm btn-outline-secondary">Add to Cart</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary">Skip</button>
+                  </div>
+                </div>
+                    `;
+
+                row.appendChild(div);
+
+                div.querySelector(".btn").addEventListener("click", () => {
+                    var ul = document.querySelector("ul");
+                    var li = document.createElement("li");
+                    var deleteBtn = document.querySelector(".btn:last-of-type");
+                    deleteBtn.innerText = "Delete";
+                    li.appendChild(div);
+                    ul.appendChild(li);
+
+                });
+
+                div.querySelector(".btn:last-of-type").addEventListener("click", (e) => {
+                    var itemHide = e.target.parentElement.parentElement;
+                    itemHide.classList.add("d-none")
+                });
+
+            });
+
+        };
+
+        filterPostList = () => {
+            var query = document.querySelector("#query").value;
+            if (query !== undefined && query.length >= 3) {  //if we have the query
+                var filteredArray = posts.filter((post) => post.title.indexOf(query) > 0); //create a variable which will contain words with that part of the query
+                createPosts(filteredArray);//create the display page again using this new variable
+            }
+            else {
+                createPosts(posts);
+            };
+
+        };
+
+
+
+
+
+    </script>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
